@@ -6,9 +6,8 @@ Created on Jan 7, 2021
 import csv
 import pandas as pd 
 from itertools import islice
-
+import File
 from datetime import time, datetime
-import os
 
 def processData(assetIDList, fileName, reportDate):
     resultList = []
@@ -26,14 +25,15 @@ def processData(assetIDList, fileName, reportDate):
                 if foundValue:
                     assetCounter = assetCounter + 1
                     for hourIndex in range(len(line[3:])):
-                        if(float(line[3:][hourIndex]) > 0): #If value is not 0, store it to the list
-                            tm = time(hourIndex)
-                            combined = datetime.combine(reportDate, tm)
-                            tempList = [foundValue[0]['Asset'], combined, float(line[3:][hourIndex])]
-                            resultList.append(tempList)
+                        #if(float(line[3:][hourIndex]) == 0): #If value is not 0, store it to the list
+                        tm = time(hourIndex)
+                        combined = datetime.combine(reportDate, tm)
+                        tempList = [foundValue[0]['Asset'], combined, float(line[3:][hourIndex])]
+                        resultList.append(tempList)
                      
             return resultList 
-    except IOError as e:
+    except Exception  as e:
+        File.deleteFile(fileName)
         raise e
 
 def convertToDF(dataList):
@@ -41,11 +41,3 @@ def convertToDF(dataList):
     print(df.info())
     return df
     
-def deleteFile(filePath):
-    try:
-        os.remove(filePath)
-        print ("File deleted!")
-    except IOError:
-        print("Error in deleting the file!")
-        raise
-    return

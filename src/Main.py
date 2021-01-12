@@ -1,9 +1,10 @@
 from WebPage import WebPage
 
 import Data
-from datetime import date, timedelta,datetime
+from datetime import date, timedelta
 import Database
-
+import time 
+import File
 def Main ():
     #Asset list
     assetIDList = [{'AssetID': 'APS1' , 'Asset': 'ATCO Scotford Upgrader (APS1)'}, {'AssetID': 'SCR1', 'Asset': 'Base Plant (SCR1)'}, {'AssetID': 'CNR5', 'Asset': 'CNRL Horizon (CNR5)' },
@@ -15,51 +16,49 @@ def Main ():
                    {'AssetID': 'CL01', 'Asset':'Christina Lake (CL01)'}]
     
     db = Database.Database()
-   #Download location
+    
+    #Download location
     fileName = r"C:\Users\pia.manzon\AppData\Local\Temp\PublicSummaryAllReportServlet.csv"
     resultList = []
     totalData = 0
     #Database last date
-    lastDBDate = db.getLatestDate()
-    
-    #If Monday, get report from friday to sunday
-    if date.today().weekday() == 0:
-        for day in range(1,4):
-            dateYesterday = date.today() - timedelta(day)
-            print (dateYesterday)
-            wb = WebPage(dateYesterday)
-            wb.frame_switch("report_nav")
-            wb.downloadReport()
-            wb.closeBrowser()
-            rawDataList = Data.processData(assetIDList, fileName, dateYesterday)
-            if(rawDataList):
-                resultList = resultList + rawDataList
-                totalData = totalData + len(resultList)
-            print("Length of list:" + str(len(resultList)))
-            Data.deleteFile(fileName)
-  
-    #Else just download yesterday's report
-    else:
-        dateYesterday = date.today() - timedelta(1)
+    lastDBDate = db.getLatestDate().date()
+    #lastDBDate = date(2021,12,1) Uncomment if you want to download reports from specific date range
+    print(lastDBDate)
+    dateYesterday = date.today() - timedelta(1)
+   
+    while(dateYesterday != lastDBDate):
+        print(dateYesterday)
         wb = WebPage(dateYesterday)
         wb.frame_switch("report_nav")
         wb.downloadReport()
         wb.closeBrowser()
+        time.sleep(1)
+        
+        if (File.isDownloaded(fileName) == False):
+            print("Error downloading the file! Check your temp folder.")
+            exit
+            
         rawDataList = Data.processData(assetIDList, fileName, dateYesterday)
+        
         if(rawDataList):
             resultList = resultList + rawDataList
             totalData = totalData + len(resultList)
         print("Length of list:" + str(len(resultList)))
-        Data.deleteFile(fileName)
+        
+        File.deleteFile(fileName)
+        time.sleep(1)
+        dateYesterday = dateYesterday - timedelta(1)
     
     if(resultList):
         resultDF = Data.convertToDF(resultList)
         print(resultDF.info())
         #db.updateDatabase(resultDF)
     else:
-        print("list is empty")
+        print("No update yet. Try again later!")
     
-   
-    print("done")
+    time.sleep(1)
+    print("Done")
+    
   
 Main ()

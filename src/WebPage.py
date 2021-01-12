@@ -48,7 +48,7 @@ class WebPage ():
         
         #OK
         self.driver.find_element_by_css_selector('[alt="OK"]').click()
-        
+        time.sleep(3)
     
     def frame_switch(self, name):
         self.driver.switch_to.frame(self.driver.find_element_by_name(name))
