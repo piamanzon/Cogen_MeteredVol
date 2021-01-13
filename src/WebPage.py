@@ -11,7 +11,7 @@ import time
 from datetime import date, timedelta
 from selenium.webdriver.common.by import By
 
-
+#Make sure that chrome driver and google chrome have the same version
 class WebPage ():
     def __init__(self, reportDate):
         options = webdriver.ChromeOptions()
@@ -29,7 +29,7 @@ class WebPage ():
         self.reportDate = reportDate
         
     def downloadReport(self):
-        time.sleep(3)
+        time.sleep(2)
         select = Select(self.driver.find_element_by_name("SelectReport"))
         select.select_by_value("Market/Reports/PublicSummaryAllReportServlet")
 
@@ -79,5 +79,5 @@ class WebPage ():
     
         
     def closeBrowser(self):
-        time.sleep(1)
+      #  time.sleep(1)
         self.driver.quit()   

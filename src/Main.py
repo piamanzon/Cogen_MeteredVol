@@ -23,9 +23,9 @@ def Main ():
     totalData = 0
     #Database last date
     lastDBDate = db.getLatestDate().date()
-    #lastDBDate = date(2021,12,1) Uncomment if you want to download reports from specific date range
+    #lastDBDate = date(2020,11,30) #Uncomment if you want to download reports from specific date range
     print(lastDBDate)
-    dateYesterday = date.today() - timedelta(1)
+    dateYesterday = date.today() - timedelta(2)
    
     while(dateYesterday != lastDBDate):
         print(dateYesterday)
@@ -33,7 +33,7 @@ def Main ():
         wb.frame_switch("report_nav")
         wb.downloadReport()
         wb.closeBrowser()
-        time.sleep(1)
+        #time.sleep(1)
         
         if (File.isDownloaded(fileName) == False):
             print("Error downloading the file! Check your temp folder.")
@@ -42,22 +42,23 @@ def Main ():
         rawDataList = Data.processData(assetIDList, fileName, dateYesterday)
         
         if(rawDataList):
-            resultList = resultList + rawDataList
-            totalData = totalData + len(resultList)
+           resultList = resultList + rawDataList
+           totalData = totalData + len(resultList)
         print("Length of list:" + str(len(resultList)))
-        
+       
         File.deleteFile(fileName)
-        time.sleep(1)
+       # time.sleep(1)
         dateYesterday = dateYesterday - timedelta(1)
-    
+        #resultList = []
+   
     if(resultList):
         resultDF = Data.convertToDF(resultList)
-        print(resultDF.info())
-        #db.updateDatabase(resultDF)
+        print(resultDF.head(50))
+       # db.updateDatabase(resultDF)
     else:
         print("No update yet. Try again later!")
+  #  time.sleep(1)
     
-    time.sleep(1)
     print("Done")
     
   

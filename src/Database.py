@@ -22,6 +22,8 @@ class Database():
 
     def getLatestDate(self):
         maxDate =  self.engine.execute("SELECT MAX(TimeStamp) FROM Cogen_Metered_Volumes").fetchone()
+      #  maxDate =  self.engine.execute("SELECT MAX(TimeStamp) FROM Test").fetchone()
+
         return maxDate[0]
     
     
@@ -30,6 +32,8 @@ class Database():
         totalRows = len(index)
         print("Number of data rows to be inserted: " + str(totalRows))
         df.to_sql("Cogen_Metered_Volumes", con = self.engine, if_exists = 'append', index=False)
+        #df.to_sql("Test", con = self.engine, if_exists = 'append', index=False)
+
         print("Inserted " + str(totalRows) + "rows!")
         return
         
