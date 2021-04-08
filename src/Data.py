@@ -38,6 +38,10 @@ def processData(assetIDList, fileName, reportDate):
 
 def convertToDF(dataList):
     df = pd.DataFrame(dataList, columns = ['Asset', 'TimeStamp', 'Volume' ]) 
+    if((df['Volume'] == 0).all()):
+        print("true")
+    else:
+        print ("false")
     print(df.info())
     return df
     

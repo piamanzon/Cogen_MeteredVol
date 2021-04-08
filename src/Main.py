@@ -32,6 +32,7 @@ def Main ():
         wb = WebPage(dateYesterday)
         wb.frame_switch("report_nav")
         wb.downloadReport()
+        time.sleep(5)
         wb.closeBrowser()
         #time.sleep(1)
         
@@ -41,23 +42,34 @@ def Main ():
             
         rawDataList = Data.processData(assetIDList, fileName, dateYesterday)
         
+        for index in range(len(rawDataList)):
+            if(rawDataList[index][2] != 0):
+                print("not zero")
+                break
+            if(index == (len(rawDataList) - 1)):
+                print("all zero")
+                rawDataList = []
+        
         if(rawDataList):
-           resultList = resultList + rawDataList
-           totalData = totalData + len(resultList)
+            resultList = resultList + rawDataList
+            totalData = totalData + len(resultList)
         print("Length of list:" + str(len(resultList)))
        
+
+        #=======================================================================
+        # for index in range(len(resultList)):
+        #     print (resultList[index])
+        #=======================================================================
+        
         File.deleteFile(fileName)
-       # time.sleep(1)
         dateYesterday = dateYesterday - timedelta(1)
-        #resultList = []
    
     if(resultList):
         resultDF = Data.convertToDF(resultList)
-        print(resultDF.head(50))
-       # db.updateDatabase(resultDF)
+        print(resultDF.head())
+        db.updateDatabase(resultDF)
     else:
         print("No update yet. Try again later!")
-  #  time.sleep(1)
     
     print("Done")
     
